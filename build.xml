@@ -19,12 +19,26 @@
     <property name="directory.local.dnd" value="${basedir}/app/code/Dnd" override="true" />
     <property name="directory.local.project" value="${basedir}/app/code/${project.directory}" override="true" />
 
+    <property name="magento.db.host" value="localhost" />
+    <property name="magento.db.user" value="root" />
+    <property name="magento.db.pass" value="root" />
+    <property name="magento.db.name" value="magento2" />
+
 
     <target name="quality-analysis">
         <phingcall target="php-lint" />
         <phingcall target="phpcpd" />
         <!--<phingcall target="phpmd" />-->
     </target>
+
+
+    <target name="check_requirements">
+        <!-- Check mysql client tools -->
+        <exec command="which mysql" outputProperty="bin.mysql" returnProperty="mage.requirement.mysql" />
+        <!-- Check PHP -->
+        <exec command="which php" outputProperty="bin.php" returnProperty="mage.requirement.php" />
+    </target>
+
 
     <target name="php-lint" description="Perform syntax check of sourcecode files">
         <echo msg="Checking PHP lint in local directories..." />
@@ -60,26 +74,20 @@
         </trycatch>
     </target>
 
-    <target name="install-magento">
+    <target name="install-database">
+        <property name="db.name" value="magento2" />
+        <!-- Create database -->
+        <exec command="${bin.mysql} -h${magento.db.host} -u${magento.db.user} -p${magento.db.pass} -e &quot;CREATE DATABASE IF NOT EXISTS ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;&quot;" checkreturn="true" />
+    </target>
 
-        <trycatch property="error">
-            <try>
-                <pdosqlexec url="mysql:host=localhost" userid="root" password="root">
-                    CREATE DATABASE magento2;
-                </pdosqlexec>
-            </try>
-            <catch>
-                <echo message="${error}" />
-            </catch>
-        </trycatch>
-
+    <target name="install-magento" depends="install-database">
         <echo msg="Installing Magento..." />
         <exec command="bin/magento setup:install
             --base-url=http://www.magento2.dev/
-            --db-host=localhost
-            --db-name=magento2
-            --db-user=root
-            --db-password=root
+            --db-host=${magento.db.host}
+            --db-name=${magento.db.name}
+            --db-user=${magento.db.user}
+            --db-password=${magento.db.pass}
             --admin-firstname=Admin
             --admin-lastname=Admin
             --admin-email=matthep.geoffray@gmail.com
@@ -89,7 +97,7 @@
             --currency=EUR
             --timezone=Europe/Paris
             --use-sample-data
-            --use-rewrites=1" dir="${basedir}" level="debug" logoutput="true"></exec>
+            --use-rewrites=1" dir="${basedir}" level="debug" logoutput="true" passthru="true" checkreturn="true" />
         <echo msg="OK" />
     </target>
 
