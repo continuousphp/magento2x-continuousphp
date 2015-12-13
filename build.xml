@@ -87,11 +87,11 @@
 
     <target name="install-database">
         <echo message="Droping ${magento.db.name} database..."/>
-        <exec command="${bin.mysql} -u${magento.db.user} -p${magento.db.pass} -e'DROP DATABASE IF EXISTS ${magento.db.name}'" checkreturn="true" passthru="true" level="debug" logoutput="true" />
+        <exec command="${bin.mysql} -u ${magento.db.user} -p${magento.db.pass} -e'DROP DATABASE IF EXISTS ${magento.db.name}'" checkreturn="true" passthru="true" level="debug" logoutput="true" />
         <echo msg="OK" />
 
         <echo msg="Installing ${magento.db.name} database..." />
-        <exec command="${bin.mysql} -u${magento.db.user} -p${magento.db.pass} -e 'CREATE DATABASE ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;'" checkreturn="true" passthru="true" level="debug" logoutput="true" />
+        <exec command="${bin.mysql} -u ${magento.db.user} -p${magento.db.pass} -e 'CREATE DATABASE ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;'" checkreturn="true" passthru="true" level="debug" logoutput="true" />
         <echo msg="OK" />
     </target>
 
