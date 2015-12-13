@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!--http://aaronsaray.com/blog/2013/06/04/integrating-php-qa-tools-with-phing/-->
-<project name="magento1x-continousphp" default="help" basedir=".">
+<project name="magento2x-continousphp" default="help" basedir=".">
 
     <import file="./vendor/continuousphp/aws-sdk-phing/tasks.xml" />
 
@@ -66,7 +66,13 @@
     </target>
 
     <target name="install-database">
-        <exec command="mysql -h${magento.db.host} -u${magento.db.user} -p${magento.db.pass} -e &quot;CREATE DATABASE IF NOT EXISTS ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;&quot;" checkreturn="true" />
+        <echo message="Droping ${magento.db.name} database..."/>
+        <exec command="mysql -u${magento.db.user} -p${magento.db.pass} -e'DROP DATABASE IF EXISTS ${magento.db.name}'" checkreturn="true" passthru="true" />
+        <echo msg="OK" />
+
+        <echo msg="Installing ${magento.db.name} database..." />
+        <exec command="mysql -u${magento.db.user} -p${magento.db.pass} -e 'CREATE DATABASE ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;'" checkreturn="true" passthru="true" />
+        <echo msg="OK" />
     </target>
 
     <target name="install-magento" depends="install-database">
