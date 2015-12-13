@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--http://aaronsaray.com/blog/2013/06/04/integrating-php-qa-tools-with-phing/-->
+<?xml version="1.0" encoding="UTF-8"?><!--http://aaronsaray.com/blog/2013/06/04/integrating-php-qa-tools-with-phing/-->
 <project name="magento1x-continousphp" default="help" basedir=".">
 
     <import file="./vendor/continuousphp/aws-sdk-phing/tasks.xml" />
@@ -59,6 +58,39 @@
                 <echo msg="phpcpd is not installed." level="warning" />
             </catch>
         </trycatch>
+    </target>
+
+    <target name="install-magento">
+
+        <trycatch property="error">
+            <try>
+                <pdosqlexec url="mysql:host=localhost" userid="root" password="root">
+                    CREATE DATABASE magento2;
+                </pdosqlexec>
+            </try>
+            <catch>
+                <echo message="${error}" />
+            </catch>
+        </trycatch>
+
+        <echo msg="Installing Magento..." />
+        <exec command="bin/magento setup:install
+            --base-url=http://www.magento2.dev/
+            --db-host=localhost
+            --db-name=magento2
+            --db-user=root
+            --db-password=root
+            --admin-firstname=Admin
+            --admin-lastname=Admin
+            --admin-email=matthep.geoffray@gmail.com
+            --admin-user=admin
+            --admin-password=admin123
+            --language=fr_FR
+            --currency=EUR
+            --timezone=Europe/Paris
+            --use-sample-data
+            --use-rewrites=1" dir="${basedir}" level="debug" logoutput="true"></exec>
+        <echo msg="OK" />
     </target>
 
     <target name="help" description="List available targets">
