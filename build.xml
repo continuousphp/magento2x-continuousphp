@@ -11,6 +11,7 @@
     <property name="exec.php" value="php" override="true" />
     <property name="exec.phing" value="${vendordir}/phing" override="true" />
     <property name="exec.phpcpd" value="${vendordir}/phpcpd" override="true" />
+    <property name="bin.magento" value="${basedir}/bin/magento" />
 
     <property name="directory.reports" value="${basedir}/build/reports" override="true" />
     <property name="directory.phpmd" value="${directory.reports}/phpmd" override="true" />
@@ -65,19 +66,38 @@
         </trycatch>
     </target>
 
+    <target name="check-magento-requirements">
+        <!-- Check mysql client tools -->
+        <exec command="which mysql" outputProperty="bin.mysql" returnProperty="mage.requirement.mysql" />
+        <if>
+            <equals arg1="${mage.requirement.mysql}" arg2="1" />
+            <then>
+                <fail msg="MySQL client tools was not found. Please check installation."/>
+            </then>
+        </if>
+        <!-- Check PHP -->
+        <exec command="which php" outputProperty="bin.php" returnProperty="mage.requirement.php" />
+        <if>
+            <equals arg1="${mage.requirement.php}" arg2="1" />
+            <then>
+                <fail msg="PHP CLI was not found. Please check installation." />
+            </then>
+        </if>
+    </target>
+
     <target name="install-database">
         <echo message="Droping ${magento.db.name} database..."/>
-        <exec command="mysql -u${magento.db.user} -p${magento.db.pass} -e'DROP DATABASE IF EXISTS ${magento.db.name}'" checkreturn="true" passthru="true" />
+        <exec command="${bin.mysql} -u${magento.db.user} -p${magento.db.pass} -e'DROP DATABASE IF EXISTS ${magento.db.name}'" checkreturn="true" passthru="true" />
         <echo msg="OK" />
 
         <echo msg="Installing ${magento.db.name} database..." />
-        <exec command="mysql -u${magento.db.user} -p${magento.db.pass} -e 'CREATE DATABASE ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;'" checkreturn="true" passthru="true" />
+        <exec command="${bin.mysql} -u${magento.db.user} -p${magento.db.pass} -e 'CREATE DATABASE ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;'" checkreturn="true" passthru="true" />
         <echo msg="OK" />
     </target>
 
-    <target name="install-magento" depends="install-database">
+    <target name="install-magento" depends="check-magento-requirements,install-database">
         <echo msg="Installing Magento..." />
-        <exec command="bin/magento setup:install
+        <exec command="${bin.magento} setup:install
             --base-url=http://www.magento2.dev/
             --db-host=${magento.db.host}
             --db-name=${magento.db.name}
