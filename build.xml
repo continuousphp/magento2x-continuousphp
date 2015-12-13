@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--http://aaronsaray.com/blog/2013/06/04/integrating-php-qa-tools-with-phing/-->
+<project name="magento1x-continousphp" default="help" basedir=".">
+
+    <import file="./vendor/continuousphp/aws-sdk-phing/tasks.xml" />
+
+    <property name="basedir" value="." />
+    <property name="vendordir" value="./vendor/bin" />
+
+    <property name="aws.profile" value="" />
+
+    <property name="exec.php" value="php" override="true" />
+    <property name="exec.phing" value="${vendordir}/phing" override="true" />
+    <property name="exec.phpcpd" value="${vendordir}/phpcpd" override="true" />
+
+    <property name="directory.reports" value="${basedir}/build/reports" override="true" />
+    <property name="directory.phpmd" value="${directory.reports}/phpmd" override="true" />
+    <property name="directory.phpcpd" value="${directory.reports}/phpcpd" override="true" />
+
+    <property name="directory.local.dnd" value="${basedir}/app/code/Dnd" override="true" />
+    <property name="directory.local.project" value="${basedir}/app/code/${project.directory}" override="true" />
+
+
+    <target name="quality-analysis">
+        <phingcall target="php-lint" />
+        <phingcall target="phpcpd" />
+        <!--<phingcall target="phpmd" />-->
+    </target>
+
+    <target name="php-lint" description="Perform syntax check of sourcecode files">
+        <echo msg="Checking PHP lint in local directories..." />
+        <apply executable="${exec.php}" failonerror="true">
+            <arg value="-l" />
+            <fileset dir="${directory.local.dnd}">
+                <include name="**/*.php" />
+            </fileset>
+            <fileset dir="${directory.local.project}">
+                <include name="**/*.php" />
+            </fileset>
+        </apply>
+        <echo msg="OK" />
+    </target>
+
+    <target name="phpcpd">
+        <trycatch>
+            <try>
+                <echo msg="Starting phpcpd parsing." />
+                <exec executable="${exec.phpcpd}" checkreturn="true">
+                    <arg path="${directory.local.dnd}" />
+                    <!--<arg value=">${directory.phpcpd}/output.txt" />-->
+                </exec>
+                <exec executable="${exec.phpcpd}" checkreturn="true">
+                    <arg path="${directory.local.project}" />
+                    <!--<arg value=">${directory.phpcpd}/output.txt" />-->
+                </exec>
+                <echo msg="phpcpd finished" />
+            </try>
+            <catch>
+                <echo msg="phpcpd is not installed." level="warning" />
+            </catch>
+        </trycatch>
+    </target>
+
+    <target name="help" description="List available targets">
+        <exec executable="${exec.phing}" passthru="true">
+            <arg value="-l" />
+        </exec>
+    </target>
+
+</project>
