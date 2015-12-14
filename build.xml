@@ -85,14 +85,18 @@
         </if>
     </target>
 
-    <target name="install-database">
-        <echo message="Droping ${magento.db.name} database..."/>
-        <exec command="${bin.mysql} -u ${magento.db.user} -p${magento.db.pass} -e'DROP DATABASE IF EXISTS ${magento.db.name}'" checkreturn="true" passthru="true" level="debug" logoutput="true" />
-        <echo msg="OK" />
+    <target name="install-database" description="Create Database and Grants">
+        <echo file="${project.basedir}/create-db.sql">
+            CREATE DATABASE IF NOT EXISTS ${magento.db.name};
+        </echo>
 
-        <echo msg="Installing ${magento.db.name} database..." />
-        <exec command="${bin.mysql} -u ${magento.db.user} -p${magento.db.pass} -e 'CREATE DATABASE ${magento.db.name} CHARACTER SET utf8 COLLATE utf8_general_ci;'" checkreturn="true" passthru="true" level="debug" logoutput="true" />
-        <echo msg="OK" />
+        <pdosqlexec url="mysql:host=${magento.db.host}"
+                    userid="${magento.db.user}"
+                    password="${magento.db.pass}">
+            <transaction src="${project.basedir}/create-db.sql"/>
+        </pdosqlexec>
+
+        <delete file="${project.basedir}/create-db.sql" quiet="true"/>
     </target>
 
     <target name="install-magento" depends="check-magento-requirements,install-database">
@@ -105,7 +109,7 @@
             --db-password=${magento.db.pass}
             --admin-firstname=Admin
             --admin-lastname=Admin
-            --admin-email=matthep.geoffray@gmail.com
+            --admin-email=mattheo.geoffray@gmail.com
             --admin-user=admin
             --admin-password=admin123
             --language=fr_FR
