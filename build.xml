@@ -101,22 +101,45 @@
 
     <target name="install-magento" depends="check-magento-requirements,install-database">
         <echo msg="Installing Magento..." />
-        <exec command="${bin.magento} setup:install
-            --base-url=http://www.magento2.dev/
-            --db-host=${magento.db.host}
-            --db-name=${magento.db.name}
-            --db-user=${magento.db.user}
-            --db-password=${magento.db.pass}
-            --admin-firstname=Admin
-            --admin-lastname=Admin
-            --admin-email=mattheo.geoffray@gmail.com
-            --admin-user=admin
-            --admin-password=admin123
-            --language=fr_FR
-            --currency=EUR
-            --timezone=Europe/Paris
-            --use-sample-data
-            --use-rewrites=1" dir="${basedir}" level="debug" logoutput="true" passthru="true" checkreturn="true" />
+        <if>
+            <equals arg1="${magento.db.pass}" arg2="" />
+            <then>
+                <exec command="${bin.magento} setup:install
+                    --base-url=http://www.magento2.dev/
+                    --db-host=${magento.db.host}
+                    --db-name=${magento.db.name}
+                    --db-user=${magento.db.user}
+                    --admin-firstname=Admin
+                    --admin-lastname=Admin
+                    --admin-email=mattheo.geoffray@gmail.com
+                    --admin-user=admin
+                    --admin-password=admin123
+                    --language=fr_FR
+                    --currency=EUR
+                    --timezone=Europe/Paris
+                    --use-sample-data
+                    --use-rewrites=1" dir="${basedir}" level="debug" logoutput="true" passthru="true" checkreturn="true" />
+            </then>
+            <else>
+                <exec command="${bin.magento} setup:install
+                    --base-url=http://www.magento2.dev/
+                    --db-host=${magento.db.host}
+                    --db-name=${magento.db.name}
+                    --db-user=${magento.db.user}
+                    --db-password=${magento.db.pass}
+                    --admin-firstname=Admin
+                    --admin-lastname=Admin
+                    --admin-email=mattheo.geoffray@gmail.com
+                    --admin-user=admin
+                    --admin-password=admin123
+                    --language=fr_FR
+                    --currency=EUR
+                    --timezone=Europe/Paris
+                    --use-sample-data
+                    --use-rewrites=1" dir="${basedir}" level="debug" logoutput="true" passthru="true" checkreturn="true" />
+            </else>
+        </if>
+
         <echo msg="OK" />
     </target>
 
