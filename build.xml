@@ -105,7 +105,7 @@
             <equals arg1="${magento.db.pass}" arg2="" />
             <then>
                 <exec command="${bin.magento} setup:install
-                    --base-url=http://www.magento2.dev/
+                    --base-url=http://localhost/
                     --db-host=${magento.db.host}
                     --db-name=${magento.db.name}
                     --db-user=${magento.db.user}
@@ -122,7 +122,7 @@
             </then>
             <else>
                 <exec command="${bin.magento} setup:install
-                    --base-url=http://www.magento2.dev/
+                    --base-url=http://localhost/
                     --db-host=${magento.db.host}
                     --db-name=${magento.db.name}
                     --db-user=${magento.db.user}
