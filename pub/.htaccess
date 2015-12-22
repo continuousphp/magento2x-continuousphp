@@ -1,3 +1,5 @@
+php_value always_populate_raw_post_data -1
+
 ############################################
 ## uncomment the line below to enable developer mode
 
