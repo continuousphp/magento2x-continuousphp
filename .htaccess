@@ -1,3 +1,7 @@
+# Disabling false deprecation error
+php_value always_populate_raw_post_data -1
+
+
 ############################################
 ## overrides deployment configuration mode value
 ## use command bin/magento deploy:mode:set to switch modes
